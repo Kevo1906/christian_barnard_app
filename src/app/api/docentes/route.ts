@@ -10,6 +10,7 @@ export async function GET(request:Request) {
             }
         })
         return NextResponse.json(docentes)
+        console.log("Prueba git datax")
     } catch (error){
         return NextResponse.json({ error: 'Error al obtener docentes.'}, {status:500})
     }
