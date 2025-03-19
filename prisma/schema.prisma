@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Estudiante {
+  id               String        @id @default(uuid())
+  nombres          String
+  apellidos        String
+  ci               String
+  fecha_nacimiento DateTime?
+  celular          String?
+  email            String?       @unique
+  activo           Boolean       @default(true)
+  mensualidades    Mensualidad[]
+  inscripciones Inscripcion[]
+
+  @@unique([nombres, apellidos, ci])
+}
+
+model Docente {
+  id               String       @id @default(uuid())
+  nombres          String
+  apellidos        String
+  ci               String
+  fecha_nacimiento DateTime?
+  celular          String?
+  email            String?      @unique
+  activo           Boolean      @default(true)
+  cursos           Curso[]
+  asistencias      Asistencia[]
+
+  @@unique([nombres, apellidos, ci])
+}
+
+model Curso {
+  id          String       @id @default(uuid())
+  nombre      String
+  descripcion String
+  horario     String
+  docente_id  String
+  docente     Docente      @relation(fields: [docente_id], references: [id])
+  asistencias Asistencia[]
+  inscripciones Inscripcion[]
+  asignaturas Asignatura[]
+}
+
+model Mensualidad {
+  id            String     @id @default(uuid())
+  estudiante_id String
+  estudiante    Estudiante @relation(fields: [estudiante_id], references: [id])
+  monto         Float
+  fecha_pago    DateTime
+  estado        String     @default("pendiente")
+}
+
+model Asistencia {
+  id           String    @id @default(uuid())
+  docente_id   String
+  docente      Docente   @relation(fields: [docente_id], references: [id])
+  curso_id     String
+  curso        Curso     @relation(fields: [curso_id], references: [id])
+  fecha        DateTime
+  hora_entrada DateTime?
+  hora_salida DateTime?
+}
+
+model Inscripcion {
+  id String @id @default(uuid())
+  estudiante_id String
+  estudiante Estudiante @relation(fields: [estudiante_id], references: [id])
+  curso_id String
+  curso Curso @relation(fields: [curso_id], references: [id])
+  fecha_inscripcion DateTime @default(now())
+  notas Nota[]
+}
+
+model Asignatura {
+  id String @id @default(uuid())
+  curso_id String
+  curso Curso @relation(fields: [curso_id], references: [id])
+  nombre String
+  descripcion String
+  notas Nota[]
+}
+
+model Nota {
+  id String @id @default(uuid())
+  inscripcion_id String
+  inscripcion Inscripcion @relation(fields: [inscripcion_id], references: [id])
+  asignatura_id String
+  asignatura Asignatura @relation(fields: [asignatura_id], references: [id])
+  valor Float
+  fecha DateTime @default(now())
+}
