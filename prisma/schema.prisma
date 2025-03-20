@@ -17,7 +17,7 @@ model Estudiante {
   id               String        @id @default(uuid())
   nombres          String
   apellidos        String
-  ci               String
+  ci               String        @unique
   fecha_nacimiento DateTime?
   celular          String?
   email            String?       @unique
@@ -25,22 +25,20 @@ model Estudiante {
   mensualidades    Mensualidad[]
   inscripciones Inscripcion[]
 
-  @@unique([nombres, apellidos, ci])
 }
 
 model Docente {
   id               String       @id @default(uuid())
   nombres          String
   apellidos        String
-  ci               String
+  ci               String     @unique
   fecha_nacimiento DateTime?
   celular          String?
-  email            String?      @unique
+  email            String      @unique
   activo           Boolean      @default(true)
   cursos           Curso[]
   asistencias      Asistencia[]
 
-  @@unique([nombres, apellidos, ci])
 }
 
 model Curso {

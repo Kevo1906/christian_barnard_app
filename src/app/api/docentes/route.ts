@@ -10,7 +10,6 @@ export async function GET(request:Request) {
             }
         })
         return NextResponse.json(docentes)
-        console.log("Prueba git datax")
     } catch (error){
         return NextResponse.json({ error: 'Error al obtener docentes.'}, {status:500})
     }
@@ -20,9 +19,18 @@ export async function POST(request:Request) {
     try{
         const data = await request.json()
         const validateData = DocenteSchema.parse(data)
+        
+        const docente = await prisma.docente.upsert({
+            where:{
+                ci:validateData.ci
+            },
+            update:{
+                activo:true
+            },
+            create:validateData
+        })
 
-        console.log(validateData)
-        return NextResponse.json({mensaje: "Exito"},{status:200})
+        return NextResponse.json(docente,{status:200})
     } catch(error){
         console.error(error)
         return NextResponse.json({error: `Error al crear al docente: `},{status:500})
